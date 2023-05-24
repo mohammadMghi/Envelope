@@ -18,6 +18,6 @@ func main() {
 
 func bazHandler() http.Handler {
       return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
- 
+            
       })
   }
