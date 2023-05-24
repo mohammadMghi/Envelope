@@ -1,22 +1,26 @@
 package envlope
 
 import (
- 
+	"log"
+	"net/http"
 	"reflect"
+	"time"
 )
 
 
 type Envlope struct{
+	handler	http.Handler
  	eHanlders []EHandler
+	r Router
  
 }
 
-type EHandler struct{}
+type EHandler interface{}
 
 func New() *Envlope{
- 
+	router := NewRouter()
 	return &Envlope{
-		 
+		 r: *router,
 	}
 }
 
@@ -39,4 +43,9 @@ func (e *Envlope)addHandlers(handler ...EHandler){
 	}
 
  
+}
+
+func (l *Envlope) ServeHTTP(w http.ResponseWriter , r *http.Request){
+ 
+    l.handler.ServeHTTP(w, r)
 }
