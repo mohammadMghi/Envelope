@@ -1,31 +1,33 @@
 package envlope
 
 import (
-	"log"
+	"context"
+	"sync"
+
 	"net/http"
 	"reflect"
-	"time"
 )
 
 
 type Envlope struct{
-	handler	http.Handler
- 	eHanlders []EHandler
+	c sync.Pool
+ 	eHanlders []http.Handler
 	r Router
  
 }
 
 type EHandler interface{}
 
-func New() *Envlope{
+func New(c context.Context) *Envlope{
 	router := NewRouter()
 	return &Envlope{
 		 r: *router,
+		 c : c,
 	}
 }
 
 
-func (e *Envlope)addHandler(handler EHandler){
+func (e *Envlope)addHandler(handler http.Handler){
 	// Checks if middlware handler is a function
 	if reflect.TypeOf(handler).Kind() != reflect.Func{
 		panic("type must be a callable function")
@@ -36,7 +38,7 @@ func (e *Envlope)addHandler(handler EHandler){
 
 
 
-func (e *Envlope)addHandlers(handler ...EHandler){
+func (e *Envlope)addHandlers(handler ...http.Handler){
 
 	for _ , handler := range(handler){
 		e.addHandler(handler)
@@ -45,7 +47,25 @@ func (e *Envlope)addHandlers(handler ...EHandler){
  
 }
 
+type Middleware func(http.HandlerFunc) http.HandlerFunc
+type Midd func(http.HandlerFunc) http.HandlerFunc
+func (e Envlope)MultipleMiddleware(h http.HandlerFunc, m ...Middleware) http.HandlerFunc {
+
+   if len(m) < 1 {
+      return h
+   }
+
+   wrapped := h
+
+   // loop in reverse to preserve middleware order
+   for i := len(m) - 1; i >= 0; i-- {
+      wrapped = m[i](wrapped)
+   }
+
+   return wrapped
+
+}
+
 func (l *Envlope) ServeHTTP(w http.ResponseWriter , r *http.Request){
  
-    l.handler.ServeHTTP(w, r)
 }

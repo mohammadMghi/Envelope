@@ -66,19 +66,19 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	handler.ServeHTTP(w, req)
 }
 
-func (r *Router) DELETE(path string, handler http.Handler) {
+func (r *Router) DELETE(path string, handler http.HandlerFunc) {
 	r.AddRoute("DELETE", path, handler)
 }
 
-func (r *Router) GET(path string, handler http.Handler) {
+func (r *Router) GET(path string, handler http.HandlerFunc) {
 	r.AddRoute("GET", path, handler)
 }
 
-func (r *Router) POST(path string, handler http.Handler) {
+func (r *Router) POST(path string, handler http.HandlerFunc) {
 	r.AddRoute("POST", path, handler)
 }
 
-func (r *Router) PUT(path string, handler http.Handler) {
+func (r *Router) PUT(path string, handler http.HandlerFunc) {
 	r.AddRoute("PUT", path, handler)
 }
 

@@ -8,9 +8,11 @@ import (
 func main() {
 
 	m := New()
-    
-  
-      m.addHandlers(logging(),bar())
+      commonMiddleware := []Middleware{
+            CurrentTimeHandler,
+         }
+      b := bar()
+      m.r.POST("/",m.MultipleMiddleware(  b  , commonMiddleware   ))
 
       http.ListenAndServe(":8080" , m)
 }
@@ -20,14 +22,13 @@ func logging() http.HandlerFunc {
       })
   }
 
-  func bar() http.Handler{
+  func bar() http.HandlerFunc{
       return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
             
       })
   }
 
-func bazHandler() http.Handler {
-      return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-            
-      })
+  func CurrentTimeHandler(w http.ResponseWriter, r *http.Request)  {
+      curTime := time.Now().Format(time.Kitchen)
+      w.Write([]byte(fmt.Sprintf("the current time is %v", curTime)))
   }
