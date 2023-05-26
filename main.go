@@ -12,10 +12,12 @@ func main() {
              test,
              test1,
          }
+
+      logger := NewLog()
       b := test(func(w http.ResponseWriter, r *http.Request) {
             
       })
-      envelop.router.POST("/",envelop.MultipleMiddleware(  b  ,   commonMiddleware  ))
+      envelop.router.POST("/",envelop.MultipleMiddleware(  logger.RequestLogger() ,   commonMiddleware  ))
 
 
       

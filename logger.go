@@ -1,24 +1,38 @@
 package envlope
 
 import (
-	"log"
 	"net/http"
 	"time"
 )
-
-type Logger struct{
-	handler http.Handler
+ 
+type Log struct {
+	hader map[string][]string
+	wroteHeader bool
+	time time.Time
+	realIp string
+	ip string
 }
 
-func NewEvnlopeLogger(handdler http.Handler) *Logger{
-	return &Logger{handler: handdler}
+func NewLog () Log{
+	return Log{}
 }
 
-func (l *Logger) ServeHTTP(w http.ResponseWriter , r *http.Request){
-    start := time.Now()
-    l.handler.ServeHTTP(w, r)
-    log.Printf("%s %s %v", r.Method, r.URL.Path, time.Since(start))
+func  (log *Log)RequestLogger(http.HandlerFunc) http.HandlerFunc{
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		timeNow := time.Now()
+
+		log.hader = w.Header().Clone()
+		
+		log.time = timeNow
+
+		log.realIp = r.Header.Get("X-Real-Ip")
+
+		log.ip = r.Header.Get("X-Forwarded-For")
+
+		println(log)
+		
+
+
+	})
 }
-
-
-

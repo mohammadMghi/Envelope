@@ -57,20 +57,22 @@ func (r *Router) getHandler(method, path string) http.Handler {
 
  
 func (r *Router) DELETE(path string, handler http.HandlerFunc) {
-	r.AddRoute("DELETE", path, handler)
+	r.AddRoute(MethodDelete, path, handler)
 }
 
 func (r *Router) GET(path string, handler http.HandlerFunc) {
-	r.AddRoute("GET", path, handler)
+	r.AddRoute(MethodGet, path, handler)
 }
 
 func (r *Router) POST(path string, handler http.HandlerFunc) {
-	r.AddRoute("POST", path, handler)
+	r.AddRoute(MethodPost, path, handler)
 }
 
 func (r *Router) PUT(path string, handler http.HandlerFunc) {
-	r.AddRoute("PUT", path, handler)
+	r.AddRoute(MethodPut, path, handler)
 }
+
+ 
 
  
 

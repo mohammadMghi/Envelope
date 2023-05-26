@@ -1,7 +1,8 @@
 package envlope
 
 import (
-	"context"
+ 
+	"log"
 	"sync"
 
 	"net/http"
@@ -13,6 +14,7 @@ type Envlope struct{
 	c sync.Pool
  	eHanlders []http.Handler
 	router Router
+	log Log
  
 }
 
@@ -20,9 +22,10 @@ type EHandler interface{}
 
 func New( ) *Envlope{
 	router := NewRouter()
+	log := NewLog()
 	return &Envlope{
 		router: *router,
- 
+		log: log,
 	}
 }
 
