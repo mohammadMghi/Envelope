@@ -6,8 +6,8 @@ import (
 )
 
 func main() {
-
-	m := New()
+ 
+	envelop := New()
       commonMiddleware := []Middleware{
              test,
              test1,
@@ -15,9 +15,11 @@ func main() {
       b := test(func(w http.ResponseWriter, r *http.Request) {
             
       })
-      m.r.POST("/",m.MultipleMiddleware(  b  ,   commonMiddleware  ))
+      envelop.router.POST("/",envelop.MultipleMiddleware(  b  ,   commonMiddleware  ))
 
-      http.ListenAndServe(":8080" , m)
+
+      
+      http.ListenAndServe(":8080" , envelop)
 }
 
  

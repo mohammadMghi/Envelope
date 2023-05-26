@@ -55,17 +55,7 @@ func (r *Router) getHandler(method, path string) http.Handler {
 	return http.NotFoundHandler()
 }
 
-func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	path := req.URL.Path
-	method := req.Method
-
-	handler := r.getHandler(method, path)
-
-	// handler middlewares go here
-
-	handler.ServeHTTP(w, req)
-}
-
+ 
 func (r *Router) DELETE(path string, handler http.HandlerFunc) {
 	r.AddRoute("DELETE", path, handler)
 }

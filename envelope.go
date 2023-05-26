@@ -12,7 +12,7 @@ import (
 type Envlope struct{
 	c sync.Pool
  	eHanlders []http.Handler
-	r Router
+	router Router
  
 }
 
@@ -21,7 +21,7 @@ type EHandler interface{}
 func New( ) *Envlope{
 	router := NewRouter()
 	return &Envlope{
-		 r: *router,
+		router: *router,
  
 	}
 }
@@ -49,13 +49,13 @@ func (e *Envlope)addHandlers(handler ...http.Handler){
 
 type Middleware func(http.HandlerFunc) http.HandlerFunc
  
-func (e Envlope)MultipleMiddleware(h http.HandlerFunc, m []Middleware) http.HandlerFunc {
+func (e Envlope)MultipleMiddleware(baseHandler http.HandlerFunc, m []Middleware) http.HandlerFunc {
 
    if len(m) < 1 {
-      return h
+      return baseHandler
    }
 
-   wrapped := h
+   wrapped := baseHandler
 
    // loop in reverse to preserve middleware order
    for i := len(m) - 1; i >= 0; i-- {
@@ -66,6 +66,15 @@ func (e Envlope)MultipleMiddleware(h http.HandlerFunc, m []Middleware) http.Hand
 
 }
 
-func (l *Envlope) ServeHTTP(w http.ResponseWriter , r *http.Request){
+func (l *Envlope) ServeHTTP(w http.ResponseWriter , req *http.Request){
+ 
+	path := req.URL.Path
+	method := req.Method
+
+	handler := l.router.getHandler(method, path)
+ 
+	// handler middlewares go here
+
+	handler.ServeHTTP(w, req)
  
 }
