@@ -18,11 +18,11 @@ type Envlope struct{
 
 type EHandler interface{}
 
-func New(c context.Context) *Envlope{
+func New( ) *Envlope{
 	router := NewRouter()
 	return &Envlope{
 		 r: *router,
-		 c : c,
+ 
 	}
 }
 
@@ -48,8 +48,8 @@ func (e *Envlope)addHandlers(handler ...http.Handler){
 }
 
 type Middleware func(http.HandlerFunc) http.HandlerFunc
-type Midd func(http.HandlerFunc) http.HandlerFunc
-func (e Envlope)MultipleMiddleware(h http.HandlerFunc, m ...Middleware) http.HandlerFunc {
+ 
+func (e Envlope)MultipleMiddleware(h http.HandlerFunc, m []Middleware) http.HandlerFunc {
 
    if len(m) < 1 {
       return h
