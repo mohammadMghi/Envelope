@@ -46,9 +46,13 @@ func (r *Router) AddRoute(method, path string, handler http.Handler) {
 }
 
 func (r *Router) getHandler(method, path string) http.Handler {
+
+ 
+
 	for _, route := range r.routes {
 		re := regexp.MustCompile(route.Pattern)
 		if route.Method == method && re.MatchString(path) {
+		 
 			return route.Handler
 		}
 	}

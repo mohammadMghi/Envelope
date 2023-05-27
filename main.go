@@ -8,33 +8,31 @@ import (
 func main() {
  
 	envelop := envlope.New()
-      commonMiddleware := []envlope.Middleware{
-             test,
-             test1,
-         }
+    logger := envlope.NewLog()
+    b := logger.RequestLogger(func(w http.ResponseWriter, r *http.Request) {
+      
+    })
+  
 
-    //   logger := NewLog()
-      b := test(func(w http.ResponseWriter, r *http.Request) {
-            
-      })
-      envelop.Router.POST("/",envelop.MultipleMiddleware(  b,   commonMiddleware  ))
-
+  
+      envelop.Router.POST("/",envelop.MultipleMiddleware(  b , nil ))
 
       
-      http.ListenAndServe(":8080" , envelop)
+      
+      http.ListenAndServe(":8081" , envelop)
 }
 
  
 
 func test(http.HandlerFunc) http.HandlerFunc{
       return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-            
+            print("asdasd")
       })
   }
 
   func test1(http.HandlerFunc) http.HandlerFunc{
       return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-            
+        print("asdasssssssssd")
       })
   }
  
