@@ -1,4 +1,4 @@
-package envlope
+package envelope
 
 import (
 	"encoding/json"

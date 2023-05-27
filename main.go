@@ -1,14 +1,14 @@
 package main
 
 import (
-    "github.com/mohammadmghi/envelope/envlope"
+    "github.com/mohammadmghi/envelope/envelope"
 	"net/http"
 )
 
 func main() {
  
-	envelop := envlope.New()
-    logger := envlope.NewLog()
+	envelop := envelope.New(":8080")
+    logger := envelope.NewLog()
     b := logger.RequestLogger(func(w http.ResponseWriter, r *http.Request) {
       
     })
@@ -19,7 +19,8 @@ func main() {
 
       
       
-      http.ListenAndServe(":8081" , envelop)
+      
+      http.ListenAndServe(envelop.Port , envelop)
 }
 
  
