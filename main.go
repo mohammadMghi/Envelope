@@ -15,7 +15,7 @@ func main() {
   
 
   
-      envelop.Router.POST("/",envelop.MultipleMiddleware(  b , nil ))
+      envelop.Router.POST("/",b)
 
       
       

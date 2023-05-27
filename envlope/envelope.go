@@ -53,22 +53,7 @@ func (e *Envlope)addHandlers(handler ...http.Handler){
 
 type Middleware func(http.HandlerFunc) http.HandlerFunc
  
-func (e *Envlope)MultipleMiddleware(baseHandler http.HandlerFunc, m []Middleware) http.HandlerFunc {
-
-   if len(m) < 1 {
-      return baseHandler
-   }
-
-   wrapped := baseHandler
-
-   // loop in reverse to preserve middleware order
-   for i := len(m) - 1; i >= 0; i-- {
-      wrapped = m[i](wrapped)
-   }
-
-   return wrapped
-
-}
+ 
 
 func (l *Envlope) ServeHTTP(w http.ResponseWriter , req *http.Request){
 
