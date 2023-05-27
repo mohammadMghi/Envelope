@@ -1,18 +1,17 @@
 package envelope
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
 )
  
 type Log struct {
-	hader map[string][]string `json:"hader"`
-	wroteHeader bool `json:"wroteHeader"`
-	time time.Time `json:"time"`
-	realIp string `json:"realIp"`
-	ip string `json:"ip"]`
+	Hader map[string][]string `json:"hader"`
+	WroteHeader bool `json:"wroteHeader"`
+	Time time.Time `json:"time"`
+	RealIp string `json:"realIp"`
+	Ip string `json:"ip"`
 }
 
 func NewLog () Log{
@@ -22,18 +21,17 @@ func NewLog () Log{
 func  (log *Log)RequestLogger(http.HandlerFunc) http.HandlerFunc{
  
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		timeNow := time.Now()
+ 
 
-		log.hader = w.Header().Clone()
-		
-		log.time = timeNow
+		log.Hader = w.Header().Clone()
+ 
+		log.Time = time.Now()
+		log.RealIp = r.Header.Get("X-Real-Ip")
 
-		log.realIp = r.Header.Get("X-Real-Ip")
+		log.Ip = r.Header.Get("X-Forwarded-For")
 
-		log.ip = r.Header.Get("X-Forwarded-For")
-
-		myLog, _ := json.Marshal(log)
-		fmt.Println(myLog)
+ 
+		fmt.Printf("%+v\n", log)
 		
 
 
