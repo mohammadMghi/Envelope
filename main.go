@@ -13,7 +13,12 @@ func main() {
       
     })
   
+    envelop.Router.Group("/test" , func(r envelope.Router) envelope.Router {
+      r.POST("/sdf" , nil)
 
+      r.GET("/asfdsf" , nil)
+      return r
+    })
   
       envelop.Router.POST("/",b)
 

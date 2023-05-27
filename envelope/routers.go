@@ -33,10 +33,51 @@ type Route struct {
 	Method  string
 	Pattern string
 	Handler http.Handler
+ 
 }
+ 
 
 type Router struct {
 	routes []Route
+	PathRootGroup PathRootGroup
+}
+
+type PathGroup struct {
+    leftPath  *PathGroup
+    rightPath *PathGroup
+	Root string
+	Path string
+	Method string
+	Handler http.Handler
+}
+ 
+type PathRootGroup struct {
+    root *PathGroup
+}
+
+ 
+
+func (router *Router) Group(path string  ,fn func(r Router) Router ) {
+
+		router.PathRootGroup.root = &PathGroup{leftPath: nil , rightPath: nil , Path : path}
+
+
+		for _, route := range fn(*router).routes{
+			if router.PathRootGroup.root.rightPath != nil{
+				router.PathRootGroup.root.rightPath = &PathGroup{Path : route.Pattern, rightPath: nil , leftPath : nil }
+			}else{
+				router.PathRootGroup.root.leftPath = &PathGroup{Path : route.Pattern, rightPath: nil , leftPath : nil  }
+			}
+
+		}	
+}
+
+
+
+func (r *Router) InsertRootPath(path string  ,routerCallBack func(r Router) Router ){
+	if path == pathRoot {
+		 
+	}
 }
 
 
