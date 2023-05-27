@@ -2,7 +2,7 @@ package envlope
 
 import (
  
-	"log"
+ 
 	"sync"
 
 	"net/http"
@@ -10,10 +10,11 @@ import (
 )
 
 
+
 type Envlope struct{
 	c sync.Pool
  	eHanlders []http.Handler
-	router Router
+	Router Router
 	log Log
  
 }
@@ -24,7 +25,7 @@ func New( ) *Envlope{
 	router := NewRouter()
 	log := NewLog()
 	return &Envlope{
-		router: *router,
+		Router: *router,
 		log: log,
 	}
 }
@@ -52,7 +53,7 @@ func (e *Envlope)addHandlers(handler ...http.Handler){
 
 type Middleware func(http.HandlerFunc) http.HandlerFunc
  
-func (e Envlope)MultipleMiddleware(baseHandler http.HandlerFunc, m []Middleware) http.HandlerFunc {
+func (e *Envlope)MultipleMiddleware(baseHandler http.HandlerFunc, m []Middleware) http.HandlerFunc {
 
    if len(m) < 1 {
       return baseHandler
@@ -74,10 +75,11 @@ func (l *Envlope) ServeHTTP(w http.ResponseWriter , req *http.Request){
 	path := req.URL.Path
 	method := req.Method
 
-	handler := l.router.getHandler(method, path)
+	handler := l.Router.getHandler(method, path)
  
 	// handler middlewares go here
 
 	handler.ServeHTTP(w, req)
  
 }
+

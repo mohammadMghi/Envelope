@@ -1,23 +1,23 @@
-package envlope
+package main
 
 import (
- 
+    "github.com/mohammadmghi/envelope/envlope"
 	"net/http"
 )
 
 func main() {
  
-	envelop := New()
-      commonMiddleware := []Middleware{
+	envelop := envlope.New()
+      commonMiddleware := []envlope.Middleware{
              test,
              test1,
          }
 
-      logger := NewLog()
+    //   logger := NewLog()
       b := test(func(w http.ResponseWriter, r *http.Request) {
             
       })
-      envelop.router.POST("/",envelop.MultipleMiddleware(  logger.RequestLogger() ,   commonMiddleware  ))
+      envelop.Router.POST("/",envelop.MultipleMiddleware(  b,   commonMiddleware  ))
 
 
       

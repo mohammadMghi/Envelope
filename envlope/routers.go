@@ -56,6 +56,9 @@ func (r *Router) getHandler(method, path string) http.Handler {
 }
 
  
+
+
+
 func (r *Router) DELETE(path string, handler http.HandlerFunc) {
 	r.AddRoute(MethodDelete, path, handler)
 }
