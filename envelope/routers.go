@@ -61,42 +61,47 @@ func (router *Router) Group(path string  ,fn func(r Router) Router ) {
 
 		router.PathGroup.root = &PathGroup{leftPath: nil , rightPath: nil , Path : path}
 		 
-		 
+
 		for _, route := range fn(*router).routes{
-			if router.PathGroup.root.rightPath != nil{
+			if router.PathGroup.root.rightPath == nil{
+		 
 				router.PathGroup.root.rightPath = &PathGroup{Path : route.Pattern, Handler: route.Handler ,rightPath: nil, leftPath : nil }
 			}else{
+		 
 				router.PathGroup.root.leftPath = &PathGroup{Path : route.Pattern,Handler: route.Handler , rightPath: nil , leftPath : nil  }
 			}
 
 		}	
 }
  
-func (r *Router) SearchPathGroup(path string   ) *PathGroup {
  
-	p := r.PathGroup.leftPath.SearchPathGroup(path)
-	
-	if p == nil{
-		return nil
-	}
-
-	return p
-}
 
   
 func (p *PathGroup) SearchPathGroup(path string  ) *PathGroup {
+
+	
+	
 	if p == nil {
+ 
 		return nil
 	}
-	if p.leftPath.Path == path{
-		return p
-	}
+ 
 	if p.rightPath.Path == path{
+
 		return p
 	}
+
+	if  &p.leftPath.Path ==  &path{
+
+		return p
+	}
+
+
 	if p.leftPath.Path == path{
+ 
 		return p.leftPath.SearchPathGroup(path)
 	}else{
+ 
 		return p.rightPath.SearchPathGroup(path)
 	}
  
@@ -106,8 +111,17 @@ func (r *Router) AddRoute(method, path string, handler http.Handler) {
 	r.routes = append(r.routes, Route{Method: method, Pattern: path, Handler: handler})
 }
 
+
+
+
+
+
+
 func (r *Router) getHandler(method, path string) http.Handler {
-	pathGroup := r.PathGroup.root.SearchPathGroup(path)
+ 
+	a := &r.PathGroup
+	pathGroup := a.SearchPathGroup(path)
+	
 	emptyPathGroup := PathGroup{}
 	if  pathGroup !=&emptyPathGroup {
 		path = path + pathGroup.Path
