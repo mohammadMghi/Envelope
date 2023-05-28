@@ -8,10 +8,10 @@ import (
 func main() {
  
 	envelop := envelope.New(":8080")
-    logger := envelope.NewLog()
-    b := logger.RequestLogger(func(w http.ResponseWriter, r *http.Request) {
+    // logger := envelope.NewLog()
+    // b := logger.RequestLogger(func(w http.ResponseWriter, r *http.Request) {
       
-    })
+    // })
   
     envelop.Router.Group("/test" , func(r envelope.Router) envelope.Router {
       r.POST("/sdf" , nil)
@@ -20,7 +20,7 @@ func main() {
       return r
     })
   
-      envelop.Router.POST("/",b)
+      // envelop.Router.POST("/",b)
 
       
       

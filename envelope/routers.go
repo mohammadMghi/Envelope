@@ -1,11 +1,12 @@
 package envelope
 
 import (
- 
- 
+	"fmt"
 	"net/http"
+	"reflect"
 	"regexp"
- 
+	"strings"
+	"unicode/utf8"
 )
 
  
@@ -39,12 +40,13 @@ type Route struct {
 
 type Router struct {
 	routes []Route
-	PathRootGroup PathRootGroup
+	PathGroup PathGroup
 }
 
 type PathGroup struct {
     leftPath  *PathGroup
     rightPath *PathGroup
+	root *PathGroup
 	Root string
 	Path string
 	Method string
@@ -52,63 +54,62 @@ type PathGroup struct {
 	
 }
  
-type PathRootGroup struct {
-    root *PathGroup
-}
-
+ 
  
 
 func (router *Router) Group(path string  ,fn func(r Router) Router ) {
 
-		router.PathRootGroup.root = &PathGroup{leftPath: nil , rightPath: nil , Path : path}
-
-
+		router.PathGroup.root = &PathGroup{leftPath: nil , rightPath: nil , Path : path}
+		 
+		 
 		for _, route := range fn(*router).routes{
-			if router.PathRootGroup.root.rightPath != nil{
-				router.PathRootGroup.root.rightPath = &PathGroup{Path : route.Pattern, Handler: route.Handler ,rightPath: nil , leftPath : nil }
+			if router.PathGroup.root.rightPath != nil{
+				router.PathGroup.root.rightPath = &PathGroup{Path : route.Pattern, Handler: route.Handler ,rightPath: nil, leftPath : nil }
 			}else{
-				router.PathRootGroup.root.leftPath = &PathGroup{Path : route.Pattern,Handler: route.Handler , rightPath: nil , leftPath : nil  }
+				router.PathGroup.root.leftPath = &PathGroup{Path : route.Pattern,Handler: route.Handler , rightPath: nil , leftPath : nil  }
 			}
 
 		}	
 }
  
-func (r *PathGroup) SearchPathGroup(path string) PathGroup {
-	if r.Path ==path{
-		return *r
+func (r *Router) SearchPathGroup(path string   ) *PathGroup {
+ 
+	p := r.PathGroup.leftPath.SearchPathGroup(path)
+	
+	if p == nil{
+		return nil
 	}
-	if r.rightPath.FindPath(path) == path{
-		return *r.rightPath
-	}
-	if r.leftPath.FindPath(path) == path{
-		return *r.leftPath
-	}
-	return PathGroup{}
+
+	return p
 }
+
+  
+func (p *PathGroup) SearchPathGroup(path string  ) *PathGroup {
+	if p == nil {
+		return nil
+	}
+	if(p.leftPath.Path == path){
+		return p
+	}else{
+		return p.leftPath.SearchPathGroup(path)
+	}
+	if p.rightPath.Path == path{
+		return p
+	}else{
+		return p.rightPath.SearchPathGroup(path)
+	}
 
  
-func (r *PathGroup) FindPath(path string) string {
-	if r.Path ==path{
-		return path
-	}
-	if r.rightPath.FindPath(path) == path{
-		return r.rightPath.Path
-	}
-	if r.leftPath.FindPath(path) == path{
-		return r.leftPath.Path
-	}
-	return ""
 }
-
 
 func (r *Router) AddRoute(method, path string, handler http.Handler) {
 	r.routes = append(r.routes, Route{Method: method, Pattern: path, Handler: handler})
 }
 
 func (r *Router) getHandler(method, path string) http.Handler {
-	pathGroup := r.PathRootGroup.root.SearchPathGroup(path)
+	pathGroup := r.PathGroup.root.SearchPathGroup(path)
 	emptyPathGroup := PathGroup{}
-	if  pathGroup !=emptyPathGroup {
+	if  pathGroup !=&emptyPathGroup {
 		path = path + pathGroup.Path
 	 
 		if pathGroup.Method == method {
@@ -148,9 +149,24 @@ func (r *Router) PUT(path string, handler http.HandlerFunc) {
 }
 
  
-
+func trimFirstRune(s string) string {
+    _, i := utf8.DecodeRuneInString(s)
+    return s[i:]
+}
  
 
+func  GetRootGroupPath(m string) string{
+	m = trimFirstRune(m)
  
+	if idx := strings.IndexByte(m, '/'); idx >= 0 {
+		s := m[:idx]
+	
+		fmt.Println(s)
+		return s
+	} else {
+		fmt.Println("Invalid string")
+	}
+	return ""
+} 
 
 
