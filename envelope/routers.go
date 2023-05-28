@@ -3,7 +3,7 @@ package envelope
 import (
 	"fmt"
 	"net/http"
-	"reflect"
+	 
 	"regexp"
 	"strings"
 	"unicode/utf8"
@@ -88,17 +88,17 @@ func (p *PathGroup) SearchPathGroup(path string  ) *PathGroup {
 	if p == nil {
 		return nil
 	}
-	if(p.leftPath.Path == path){
+	if p.leftPath.Path == path{
 		return p
-	}else{
-		return p.leftPath.SearchPathGroup(path)
 	}
 	if p.rightPath.Path == path{
 		return p
+	}
+	if p.leftPath.Path == path{
+		return p.leftPath.SearchPathGroup(path)
 	}else{
 		return p.rightPath.SearchPathGroup(path)
 	}
-
  
 }
 
