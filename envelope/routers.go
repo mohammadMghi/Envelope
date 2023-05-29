@@ -60,18 +60,21 @@ type PathGroup struct {
 func (router *Router) Group(path string  ,fn func(r Router) Router ) {
 
 		router.PathGroup.root = &PathGroup{leftPath: nil , rightPath: nil , Path : path}
-		 
+
 
 		for _, route := range fn(*router).routes{
-			if router.PathGroup.root.rightPath == nil{
+
+			
+			if router.PathGroup.rightPath == nil{
 		 
-				router.PathGroup.root.rightPath = &PathGroup{Path : route.Pattern, Handler: route.Handler ,rightPath: nil, leftPath : nil }
+				router.PathGroup.rightPath = &PathGroup{Path : route.Pattern, Handler: route.Handler ,rightPath: nil, leftPath : nil }
 			}else{
-		 
-				router.PathGroup.root.leftPath = &PathGroup{Path : route.Pattern,Handler: route.Handler , rightPath: nil , leftPath : nil  }
+				fmt.Printf("%+v\n", router.PathGroup.leftPath  )	
+				router.PathGroup.leftPath = &PathGroup{Path : route.Pattern,Handler: route.Handler , rightPath: nil , leftPath : nil  }
 			}
 
-		}	
+		}
+	
 }
  
  
@@ -79,23 +82,30 @@ func (router *Router) Group(path string  ,fn func(r Router) Router ) {
   
 func (p *PathGroup) SearchPathGroup(path string  ) *PathGroup {
 
-	
-	
-	if p == nil {
+
  
-		return nil
+	if p.leftPath.Path == "" {
+
+		return p
 	}
  
+	print( &p.leftPath.Path)
+ 
+	if p.rightPath.Path == "" {
+ 
+		return p
+	}
+
 	if p.rightPath.Path == path{
-
+ 
 		return p
 	}
 
-	if  &p.leftPath.Path ==  &path{
 
+	if  p.leftPath.Path ==  path{
+ 
 		return p
 	}
-
 
 	if p.leftPath.Path == path{
  
