@@ -69,7 +69,7 @@ func (router *Router) Group(path string  ,fn func(r Router) Router ) {
 		 
 				router.PathGroup.rightPath = &PathGroup{Path : route.Pattern, Handler: route.Handler ,rightPath: nil, leftPath : nil }
 			}else{
-				fmt.Printf("%+v\n", router.PathGroup.leftPath  )	
+			
 				router.PathGroup.leftPath = &PathGroup{Path : route.Pattern,Handler: route.Handler , rightPath: nil , leftPath : nil  }
 			}
 
@@ -82,36 +82,36 @@ func (router *Router) Group(path string  ,fn func(r Router) Router ) {
   
 func (p *PathGroup) SearchPathGroup(path string  ) *PathGroup {
 
-
  
+
+
 	if p.leftPath.Path == "" {
-
-		return p
-	}
  
-	print( &p.leftPath.Path)
+		return nil
+	}
+
  
 	if p.rightPath.Path == "" {
  
-		return p
+		return nil
 	}
 
-	if p.rightPath.Path == path{
+	if p.rightPath.Path == GetGroupPath(path){
  
-		return p
+		return p.rightPath
 	}
 
 
-	if  p.leftPath.Path ==  path{
+	if  p.leftPath.Path ==  GetGroupPath(path){
  
-		return p
+		return p.leftPath
 	}
-
-	if p.leftPath.Path == path{
+ 
+	if p.leftPath.Path == GetGroupPath(path){
  
 		return p.leftPath.SearchPathGroup(path)
 	}else{
- 
+	 
 		return p.rightPath.SearchPathGroup(path)
 	}
  
@@ -129,8 +129,8 @@ func (r *Router) AddRoute(method, path string, handler http.Handler) {
 
 func (r *Router) getHandler(method, path string) http.Handler {
  
-	a := &r.PathGroup
-	pathGroup := a.SearchPathGroup(path)
+ 
+	pathGroup  := r.PathGroup.SearchPathGroup(path)
 	
 	emptyPathGroup := PathGroup{}
 	if  pathGroup !=&emptyPathGroup {
@@ -193,4 +193,17 @@ func  GetRootGroupPath(m string) string{
 	return ""
 } 
 
+func  GetGroupPath(m string) string{
+	m = trimFirstRune(m)
+ 
+	if idx := strings.IndexByte(m, '/'); idx >= 0 {
+		s := m[idx:]
+	
+		fmt.Println(s)
+		return s
+	} else {
+		fmt.Println("Invalid string")
+	}
+	return ""
+} 
 
