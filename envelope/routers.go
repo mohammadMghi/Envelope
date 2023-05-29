@@ -3,10 +3,12 @@ package envelope
 import (
 	"fmt"
 	"net/http"
-	 
+
 	"regexp"
 	"strings"
 	"unicode/utf8"
+
+ 
 )
 
  
@@ -123,36 +125,50 @@ func (r *Router) AddRoute(method, path string, handler http.Handler) {
 
 
 
+func (r *Router) checkPathIsGroup (path string) bool{
+	fmt.Printf( "group pattern  : "   + r.PathGroup.root.Path)
+	fmt.Printf( "checks path :: "  + path)
 
-
-
-
-func (r *Router) getHandler(method, path string) http.Handler {
- 
- 
-	pathGroup  := r.PathGroup.SearchPathGroup(path)
-	
-	emptyPathGroup := PathGroup{}
-	if  pathGroup !=&emptyPathGroup {
-		path = path + pathGroup.Path
-	 
-		if pathGroup.Method == method {
-			return pathGroup.Handler
-		}
+	if r.PathGroup.root.Path == path{
+		print("true")
+		return true
 	}
-	
+	print("false")
+	return false
+}
 
+func (r *Router)getHandl(path string, method string) http.Handler{
 	for _, route := range r.routes {
-		re := regexp.MustCompile(route.Pattern)
-		if route.Method == method && re.MatchString(path) {
-		 
-			return route.Handler
-		}
-	}
+				re := regexp.MustCompile(route.Pattern)
+				if route.Method == method && re.MatchString(path) {
+					print("33333333333333333333333")
+					return route.Handler
+				}
+			}
+			print("NotFoundHandler 404")
 	return http.NotFoundHandler()
 }
 
+func (r *Router) getHandler(method string, path string) http.Handler {
  
+	isGroupPath := r.checkPathIsGroup(GetRootGroupPath(path))
+	pathGroup  := r.PathGroup.SearchPathGroup(path)
+	
+	// Checks if root path exsited in group then get Handler
+	if isGroupPath {
+	emptyPathGroup := PathGroup{}
+		if  pathGroup !=&emptyPathGroup {
+			print("path ::: "  + path)
+			return r.getHandl(path , method)
+		
+		}
+	}
+	
+
+	return r.getHandl(path , method)
+
+}
+
 
 
 

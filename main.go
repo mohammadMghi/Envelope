@@ -1,20 +1,22 @@
 package main
 
 import (
-    "github.com/mohammadmghi/envelope/envelope"
+ 
 	"net/http"
+
+	"github.com/mohammadmghi/envelope/envelope"
 )
 
 func main() {
  
 	envelop := envelope.New(":8081")
-    // logger := envelope.NewLog()
-    // b := logger.RequestLogger(func(w http.ResponseWriter, r *http.Request) {
-      
-    // })
+    logger := envelope.NewLog()
+    b := logger.RequestLogger(func(w http.ResponseWriter, r *http.Request) {
+      print("asdddddddddddddddddddddddddddddddasdf")
+    })
   
     envelop.Router.Group("/test" , func(r envelope.Router) envelope.Router {
-      r.POST("/sdf" , nil)
+      r.POST("/sdf" , b)
 
       r.GET("/asfdsf" , nil)
       return r
