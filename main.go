@@ -10,13 +10,13 @@ import (
 func main() {
  
 	envelop := envelope.New(":8081")
-    logger := envelope.NewLog()
-    b := logger.RequestLogger(func(w http.ResponseWriter, r *http.Request) {
-      print("asdddddddddddddddddddddddddddddddasdf")
-    })
+ 
+ 
   
     envelop.Router.Group("/test" , func(r envelope.Router) envelope.Router {
-      r.POST("/sdf" , b)
+      r.POST("/sdf" ,  http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        print("asdasd")
+     }))
 
       r.GET("/asfdsf" , nil)
       return r
@@ -32,11 +32,7 @@ func main() {
 
  
 
-func test(http.HandlerFunc) http.HandlerFunc{
-      return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-            print("asdasd")
-      })
-  }
+ 
 
   func test1(http.HandlerFunc) http.HandlerFunc{
       return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

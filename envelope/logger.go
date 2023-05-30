@@ -18,7 +18,7 @@ func NewLog () Log{
 	return Log{}
 }
 
-func  (log *Log)RequestLogger(http.HandlerFunc) http.HandlerFunc{
+func  (log *Log)RequestLogger(  http.HandlerFunc) http.HandlerFunc{
  
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
  
@@ -30,10 +30,10 @@ func  (log *Log)RequestLogger(http.HandlerFunc) http.HandlerFunc{
 
 		log.Ip = r.Header.Get("X-Forwarded-For")
 
- 
+		
 		fmt.Printf("%+v\n", log)
 		
-
+		
 
 	})
 }

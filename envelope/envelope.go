@@ -33,7 +33,7 @@ func New(port string ) *Envelope{
 }
 
 func initLog(port string){
-	print("Envelope now running on : " +"http://"+ GetOutboundIP().String() + ":" + port + "\n")
+	print("Envelope now running on : "  + GetOutboundIP().String() + ":" + port + "\n")
 }
 // Get preferred outbound ip of this machine
 func GetOutboundIP() net.IP {
@@ -79,8 +79,8 @@ func (l *Envelope) ServeHTTP(w http.ResponseWriter , req *http.Request){
 
 	handler := l.Router.getHandler(method, path)
  
-	print("path : " + path)
-	print("method :" + method)
+	print(" path : " + path)
+	print(" method :" + method)
 
 
 

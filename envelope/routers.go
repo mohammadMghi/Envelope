@@ -126,10 +126,10 @@ func (r *Router) AddRoute(method, path string, handler http.Handler) {
 
 
 func (r *Router) checkPathIsGroup (path string) bool{
-	fmt.Printf( "group pattern  : "   + r.PathGroup.root.Path)
-	fmt.Printf( "checks path :: "  + path)
+	fmt.Printf( " group pattern  : "   + r.PathGroup.root.Path + "\n")
+	fmt.Printf( " checks path :: "  + path +"\n")
 
-	if r.PathGroup.root.Path == path{
+	if r.PathGroup.root.Path == "/" + path{
 		print("true")
 		return true
 	}
@@ -141,13 +141,29 @@ func (r *Router)getHandl(path string, method string) http.Handler{
 	for _, route := range r.routes {
 				re := regexp.MustCompile(route.Pattern)
 				if route.Method == method && re.MatchString(path) {
-					print("33333333333333333333333")
+					fmt.Printf("%+v\n", route.Handler)
 					return route.Handler
 				}
 			}
-			print("NotFoundHandler 404")
+			print("NotFoundHandler 404 ")
 	return http.NotFoundHandler()
 }
+
+
+
+func (r *Router)getHandlerGroup(path string, method string) http.Handler{
+	pathGroup := r.PathGroup.SearchPathGroup(path)
+ 
+	if  pathGroup.Handler != nil {
+ 
+		return pathGroup.Handler
+	}
+
+	return http.NotFoundHandler()
+}
+
+
+
 
 func (r *Router) getHandler(method string, path string) http.Handler {
  
@@ -158,8 +174,8 @@ func (r *Router) getHandler(method string, path string) http.Handler {
 	if isGroupPath {
 	emptyPathGroup := PathGroup{}
 		if  pathGroup !=&emptyPathGroup {
-			print("path ::: "  + path)
-			return r.getHandl(path , method)
+
+			return r.getHandlerGroup(path, method)
 		
 		}
 	}
