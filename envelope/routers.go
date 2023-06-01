@@ -119,6 +119,13 @@ func (p *PathGroup) SearchPathGroup(path string  ) *PathGroup {
  
 }
 
+func Chain(f http.HandlerFunc, middlewares ...Middleware) http.HandlerFunc {
+    for _, m := range middlewares {
+        f = m(f)
+    }
+    return f
+}
+
 func (r *Router) AddRoute(method, path string, handler http.Handler) {
 	r.routes = append(r.routes, Route{Method: method, Pattern: path, Handler: handler})
 }

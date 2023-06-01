@@ -14,11 +14,13 @@ func main() {
  
   
     envelop.Router.Group("/test" , func(r envelope.Router) envelope.Router {
+    
+     
       r.POST("/sdf" ,  http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         print("asdasd")
-     }))
+      }))
 
-      r.GET("/asfdsf" , nil)
+      r.POST("/asfdsf" , envelope.Chain(logger(), Method("POST") ))
       return r
     })
   
@@ -34,9 +36,16 @@ func main() {
 
  
 
-  func test1(http.HandlerFunc) http.HandlerFunc{
+  func logger() http.HandlerFunc{
       return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        print("asdasssssssssd")
+        print("logger test middleware")
       })
   }
  
+  func Method(m string) envelope.Middleware {
+ 
+    return func(f http.HandlerFunc) http.HandlerFunc {
+      print("Method Function is Post")
+       return f
+    }
+}
