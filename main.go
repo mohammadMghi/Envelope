@@ -23,6 +23,7 @@ func main() {
       }))
 
       r.POST("/asfdsf" , func() string{
+     
         return "sdasdas"
 
       })
