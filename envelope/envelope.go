@@ -1,6 +1,7 @@
 package envelope
 
 import (
+	"fmt"
 	"log"
 	"net"
 	"sync"
@@ -13,7 +14,7 @@ import (
 
 type Envelope struct{
 	c sync.Pool
- 	eHanlders []http.Handler
+	HandlersChain []HandlersChain
 	Router Router
 	log Log
 	Port string
@@ -48,18 +49,18 @@ func GetOutboundIP() net.IP {
     return localAddr.IP
 }
 
-func (e *Envelope)addHandler(handler http.Handler){
+func (e *Envelope)addHandler(handler HandlersChain){
 	// Checks if middlware handler is a function
 	if reflect.TypeOf(handler).Kind() != reflect.Func{
 		panic("type must be a callable function")
 	}
 
-	e.eHanlders = append(e.eHanlders , handler )
+	e.HandlersChain = append(e.HandlersChain , handler )
 }
 
 
 
-func (e *Envelope)addHandlers(handler ...http.Handler){
+func (e *Envelope)addHandlers(handler ...HandlersChain){
 
 	for _ , handler := range(handler){
 		e.addHandler(handler)
@@ -67,17 +68,66 @@ func (e *Envelope)addHandlers(handler ...http.Handler){
 
  
 }
+type responseWriter struct{
+	http.ResponseWriter
+}
+
+type Context struct{
+	writer responseWriter
+	*http.Request
+}
+
+func (w *responseWriter) Unwrap() http.ResponseWriter {
+	return w.ResponseWriter
+}
+
+type HandlerFunc func(*Context)
+type HandlersChain  HandlerFunc
+
 
 type Middleware func(http.HandlerFunc) http.HandlerFunc
  
  
 
-func (l *Envelope) ServeHTTP(w http.ResponseWriter , req *http.Request){
+func (e *Envelope) Handler() http.Handler{
+	return e
+}
 
+func (e *Envelope) createHandlerFunc(handler Handler) http.Handler{
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		handler
+	})
+}
+
+type Handler interface{}
+
+func validateHandler(handler Handler) {
+	if reflect.TypeOf(handler).Kind() != reflect.Func {
+		panic("evelope handler must be a callable func")
+	}
+}
+
+func (l *Envelope) ServeHTTP(w http.ResponseWriter , req *http.Request){
+	var handler http.Handler
 	path := req.URL.Path
 	method := req.Method
 
-	handler := l.Router.getHandler(method, path)
+
+
+
+	result, isHttpHandler:=l.Router.getHandler(method, path).(*http.HandlerFunc)
+
+	createdHandler := l.createHandlerFunc(l.Router.getHandler(method, path))
+
+	if isHttpHandler {
+		print("createdHandler")
+		handler = result
+	}else{
+		print("createdHandler")
+		handler = createdHandler
+	}
+
+ 
  
 	print(" path : " + path)
 	print(" method :" + method)

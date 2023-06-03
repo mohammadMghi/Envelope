@@ -22,7 +22,7 @@ func  (log *Log)RequestLogger(  http.HandlerFunc) http.HandlerFunc{
  
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
  
-
+		
 		log.Hader = w.Header().Clone()
  
 		log.Time = time.Now()

@@ -35,7 +35,8 @@ func NewRouter() *Router {
 type Route struct {
 	Method  string
 	Pattern string
-	Handler http.Handler
+
+	Handler Handler
  
 }
  
@@ -52,10 +53,14 @@ type PathGroup struct {
 	Root string
 	Path string
 	Method string
-	Handler http.Handler
+	Handler Handler
 	
 }
- 
+
+type context struct{
+	responseWriter http.ResponseWriter
+
+}
  
  
 
@@ -119,14 +124,15 @@ func (p *PathGroup) SearchPathGroup(path string  ) *PathGroup {
  
 }
 
-func Chain(f http.HandlerFunc, middlewares ...Middleware) http.HandlerFunc {
-    for _, m := range middlewares {
-        f = m(f)
-    }
-    return f
-}
+// func Chain(f http.HandlerFunc, middlewares ...Middleware) http.HandlerFunc {
+//     for _, m := range middlewares {
+//         f = m(f)
+//     }
+//     return f
+// }
 
-func (r *Router) AddRoute(method, path string, handler http.Handler) {
+
+func (r *Router) AddRoute(method, path string, handler Handler) {
 	r.routes = append(r.routes, Route{Method: method, Pattern: path, Handler: handler})
 }
 
@@ -144,7 +150,7 @@ func (r *Router) checkPathIsGroup (path string) bool{
 	return false
 }
 
-func (r *Router)getHandl(path string, method string) http.Handler{
+func (r *Router)getHandl(path string, method string) Handler{
 	for _, route := range r.routes {
 				re := regexp.MustCompile(route.Pattern)
 				if route.Method == method && re.MatchString(path) {
@@ -157,8 +163,8 @@ func (r *Router)getHandl(path string, method string) http.Handler{
 }
 
 
-
-func (r *Router)getHandlerGroup(path string, method string) http.Handler{
+ 
+func (r *Router)getHandlerGroup(path string, method string) Handler{
 	pathGroup := r.PathGroup.SearchPathGroup(path)
  
 	if  pathGroup.Handler != nil {
@@ -169,10 +175,12 @@ func (r *Router)getHandlerGroup(path string, method string) http.Handler{
 	return http.NotFoundHandler()
 }
 
+func (r *Router) Use (){
+
+}
 
 
-
-func (r *Router) getHandler(method string, path string) http.Handler {
+func (r *Router) getHandler(method string, path string) Handler {
  
 	isGroupPath := r.checkPathIsGroup(GetRootGroupPath(path))
 	pathGroup  := r.PathGroup.SearchPathGroup(path)
@@ -195,19 +203,19 @@ func (r *Router) getHandler(method string, path string) http.Handler {
 
 
 
-func (r *Router) DELETE(path string, handler http.HandlerFunc) {
+func (r *Router) DELETE(path string, handler Handler) {
 	r.AddRoute(MethodDelete, path, handler)
 }
 
-func (r *Router) GET(path string, handler http.HandlerFunc) {
+func (r *Router) GET(path string, handler Handler) {
 	r.AddRoute(MethodGet, path, handler)
 }
 
-func (r *Router) POST(path string, handler http.HandlerFunc) {
+func (r *Router) POST(path string, handler Handler) {
 	r.AddRoute(MethodPost, path, handler)
 }
 
-func (r *Router) PUT(path string, handler http.HandlerFunc) {
+func (r *Router) PUT(path string, handler Handler) {
 	r.AddRoute(MethodPut, path, handler)
 }
 

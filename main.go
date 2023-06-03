@@ -12,7 +12,9 @@ func main() {
 	envelop := envelope.New(":8081")
  
  
-  
+  envelop.Router.POST("/" , func() string{
+    return ""
+  })
     envelop.Router.Group("/test" , func(r envelope.Router) envelope.Router {
     
      
@@ -20,13 +22,16 @@ func main() {
         print("asdasd")
       }))
 
-      r.POST("/asfdsf" , envelope.Chain(logger(), Method("POST") ))
+      r.POST("/asfdsf" , func() string{
+        return "sdasdas"
+
+      })
       return r
     })
   
       // envelop.Router.POST("/",b)
 
-      
+    
       
       
       http.ListenAndServe(envelop.Port , envelop)
