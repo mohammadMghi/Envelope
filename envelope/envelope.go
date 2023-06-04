@@ -1,14 +1,16 @@
 package envelope
 
 import (
+	"encoding/json"
+	"go/printer"
 	"log"
 	"net"
 	"strings"
 	"sync"
 
 	"net/http"
+	"net/textproto"
 	"reflect"
- 
 )
 
 type Envelope struct {
@@ -95,7 +97,8 @@ func (e *Envelope) createHandlerFunc(handler Handler) http.Handler {
 		handlerFunction , castedhandlerFunction:= handler.(func())
 		handlerIntStringFunction , castedhandlerStringIntFunction:= handler.(func() (int, string) )
 		if casted{
-			 handlerStringFunction()
+			 txt := handlerStringFunction()
+			 print(txt)
 			 return
 		}
 		if castedhandlerFunction{
@@ -103,7 +106,11 @@ func (e *Envelope) createHandlerFunc(handler Handler) http.Handler {
 			return
 		}
 		if castedhandlerStringIntFunction{
-		    handlerIntStringFunction()
+		    code , txt := handlerIntStringFunction()
+			
+			println(txt)
+ 
+			w.WriteHeader(code)
 			return
 		}
 
