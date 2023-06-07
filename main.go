@@ -13,7 +13,8 @@ func main() {
  
 
 
-  
+  cache :=  envelope.NewCacheEnv(10000000)
+  cache.Set()
  
   envelop.Router.POST("/" , func() string{
     return ""

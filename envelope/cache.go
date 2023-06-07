@@ -18,7 +18,7 @@ type objects struct{
 }
 
 
-func NewCacheEnv(defaultExpiration time.Duration)Cache{
+func NewCacheEnv(defaultExpiration time.Duration) Cache{
 	obj := make(map[string]objects)
 	return Cache{
 		object : obj,
@@ -26,7 +26,7 @@ func NewCacheEnv(defaultExpiration time.Duration)Cache{
 	}
 }
 
-func (cache *Cache)set(key string ,item interface{} , timeExp time.Duration){
+func (cache *Cache)Set(key string ,item interface{} , timeExp time.Duration){
 	var exp int64
 	if timeExp == DefueltTimeExpetion{
 		timeExp = cache.defaultExpiration
@@ -42,7 +42,7 @@ func (cache *Cache)set(key string ,item interface{} , timeExp time.Duration){
 	}
 }
 
-func (cache *Cache)get(key string) (interface{} , bool){
+func (cache *Cache)Get(key string) (interface{} , bool){
 
 	//check the obj existed in cache
 	i , f := cache.object[key]
