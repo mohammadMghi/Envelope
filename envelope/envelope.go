@@ -1,15 +1,14 @@
 package envelope
 
 import (
-	"encoding/json"
-	"go/printer"
+	 
 	"log"
 	"net"
 	"strings"
 	"sync"
 
 	"net/http"
-	"net/textproto"
+ 
 	"reflect"
 )
 
@@ -17,6 +16,7 @@ type Envelope struct {
 	c             sync.Pool
 	HandlersChain []HandlersChain
 	Router        Router
+ 
 	log           Log
 	Port          string
 }
@@ -98,6 +98,8 @@ func (e *Envelope) createHandlerFunc(handler Handler) http.Handler {
 		handlerIntStringFunction , castedhandlerStringIntFunction:= handler.(func() (int, string) )
 		if casted{
 			 txt := handlerStringFunction()
+			 b := []byte(txt)
+			 w.Write(b)
 			 print(txt)
 			 return
 		}
@@ -107,9 +109,8 @@ func (e *Envelope) createHandlerFunc(handler Handler) http.Handler {
 		}
 		if castedhandlerStringIntFunction{
 		    code , txt := handlerIntStringFunction()
-			
-			println(txt)
- 
+			b := []byte(txt)
+			w.Write(b)
 			w.WriteHeader(code)
 			return
 		}
