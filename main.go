@@ -1,11 +1,16 @@
 package main
 
 import (
- 
+	"fmt"
 	"net/http"
 
 	"github.com/mohammadmghi/envelope/envelope"
 )
+
+type test struct{
+  ItemOne string
+  itemTwo string
+}
 
 func main() {
  
@@ -13,13 +18,24 @@ func main() {
  
 
 
-  cache :=  envelope.NewCacheEnv(10000000)
-  cache.Set()
- 
-  envelop.Router.POST("/" , func() string{
-    return ""
-  })
+  cache :=  envelope.NewCacheEnv(100000000000000)
 
+  myTest :=test{
+    "Hello" , 
+    "RR",
+  }
+  
+ 
+  // envelop.Router.POST("/" , func() string{
+
+  //   return ""
+  // })
+
+
+  // envelop.Router.POST("/getTest" , func() string{
+  //   cache.Set("Test" , myTest ,100000000000000 )
+  //   return ""
+  // })
 
 
 
@@ -28,12 +44,20 @@ func main() {
 
     envelop.Router.Group("/test" , func(r envelope.Router) envelope.Router {
     
-     
+
       r.POST("/sdf" ,  http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        print("asdasd")
+        inter , b  :=cache.Get("Test")
+            fmt.Printf("this is iiiiiiiiiiiiiiiiii %+v\n",inter )
+        if b {
+          fmt.Printf("this is iiiiiiiiiiiiiiiiii %+v\n",inter )
+        }
+        
+  
       }))
 
       r.POST("/asfdsf" , func() string{
+ 
+        cache.Set("Test" , myTest ,100000000000000 )
      
         return "sdasdas"
 

@@ -4,7 +4,7 @@ import (
 	 
 	"log"
 	"net"
-	"strings"
+ 
 	"sync"
 
 	"net/http"
@@ -136,56 +136,23 @@ func (l *Envelope) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	var handler http.Handler
 	path := req.URL.Path
 	method := req.Method
+ 
+	result, isHttpHandler := l.Router.getHandler(method, path).(http.HandlerFunc)
 
-	result, isHttpHandler := l.Router.getHandler(method, path).(*http.HandlerFunc)
 
-	createdHandler := l.createHandlerFunc(l.Router.getHandler(method, path))
 
 	if isHttpHandler {
-		print("createdHandler")
+ 
 		handler = result
 	} else {
-		print("createdHandler")
+		createdHandler := l.createHandlerFunc(l.Router.getHandler(method, path))
+ 
 		handler = createdHandler
 	}
 
-	print(" path : " + path)
-	print(" method :" + method)
+ 
 
 	handler.ServeHTTP(w, req)
 
 }
-func signature(f interface{}) string {
-    t := reflect.TypeOf(f)
-    if t.Kind() != reflect.Func {
-        return "<not a function>"
-    }
-
-    buf := strings.Builder{}
-    buf.WriteString("func (")
-    for i := 0; i < t.NumIn(); i++ {
-        if i > 0 {
-            buf.WriteString(", ")
-        }
-        buf.WriteString(t.In(i).String())
-    }
-    buf.WriteString(")")
-    if numOut := t.NumOut(); numOut > 0 {
-        if numOut > 1 {
-            buf.WriteString(" (")
-        } else {
-            buf.WriteString(" ")
-        }
-        for i := 0; i < t.NumOut(); i++ {
-            if i > 0 {
-                buf.WriteString(", ")
-            }
-            buf.WriteString(t.Out(i).String())
-        }
-        if numOut > 1 {
-            buf.WriteString(")")
-        }
-    }
-
-    return buf.String()
-}
+ 

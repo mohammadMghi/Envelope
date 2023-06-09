@@ -18,6 +18,6 @@ func NewParams() Params{
 
 func logger() http.HandlerFunc{
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	  print("logger test middleware")
+ 
 	})
 }

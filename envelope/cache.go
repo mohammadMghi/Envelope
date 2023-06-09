@@ -1,6 +1,10 @@
 package envelope
 
-import "time"
+import (
+ 
+ 
+	"time"
+)
 
 const(
 	DefueltTimeExpetion = 0
@@ -51,14 +55,15 @@ func (cache *Cache)Get(key string) (interface{} , bool){
 	if f == false{
 		return nil , false
 	} 
-
-	if i.timeExpression < 0{
-		if !(time.Now().UnixNano() > i.timeExpression) {
-			return cache.object[key] , false
+ 
+	if i.timeExpression > 0{
+		if time.Now().UnixNano() <= i.timeExpression {
+			return cache.object[key] , true
 		}
 	}
 
 	return nil ,false
  
 }
+
  
