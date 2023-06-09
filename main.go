@@ -26,16 +26,16 @@ func main() {
   }
   
  
-  // envelop.Router.POST("/" , func() string{
+  envelop.Router.POST("/" , func() string{
 
-  //   return ""
-  // })
+    return ""
+  })
 
 
-  // envelop.Router.POST("/getTest" , func() string{
-  //   cache.Set("Test" , myTest ,100000000000000 )
-  //   return ""
-  // })
+  envelop.Router.POST("/getTest" , func() string{
+    cache.Set("Test" , myTest ,100000000000000 )
+    return ""
+  })
 
 
 

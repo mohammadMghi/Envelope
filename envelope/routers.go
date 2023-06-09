@@ -65,21 +65,21 @@ type context struct{
  
 
 func (router *Router) Group(path string  ,fn func(r Router) Router ) {
-
+ 
 		router.PathGroup.root = &PathGroup{leftPath: nil , rightPath: nil , Path : path}
 
 
 		for _, route := range fn(*router).routes{
 
-			
+			 
 			if router.PathGroup.leftPath == nil{
 
-
+			
 				router.PathGroup.leftPath = &PathGroup{Path : route.Pattern,Handler: route.Handler , rightPath: nil , leftPath : nil  }
 
 			}else{
 
-	
+			
 				router.PathGroup.rightPath = &PathGroup{Path : route.Pattern, Handler: route.Handler ,rightPath: nil, leftPath : nil }
 
 			}
@@ -94,7 +94,7 @@ func (router *Router) Group(path string  ,fn func(r Router) Router ) {
 func (pathGroup *PathGroup) GetPathGroup(path string  ) *PathGroup {
 
 
- 
+	fmt.Printf("path group :: %+v\n", pathGroup.rightPath.Path)
 
 	if pathGroup.leftPath.Path == "" {
 
@@ -156,6 +156,8 @@ func (r *Router) checkPathIsGroup (path string) bool{
 }
 
 func (r *Router)getNormalHandler(path string, method string) Handler{
+
+ 
 	for _, route := range r.routes {
 				re := regexp.MustCompile(route.Pattern)
 				if route.Method == method && re.MatchString(path) {
@@ -183,24 +185,26 @@ func (r *Router)getHandlerGroup(path string, method string) Handler{
  
 
 func (r *Router) getHandler(method string, path string) Handler {
- 
-	isGroupPath := r.checkPathIsGroup(GetRootGroupPath(path))
+	fmt.Printf("path :: %+v\n", path)
+	if path != pathRoot{
+		isGroupPath := r.checkPathIsGroup(GetRootGroupPath(path))
 
 
-	
-	// Checks if root path exsited in group then get Handler
-	if isGroupPath {
-
- 	pathGroup  := r.PathGroup.GetPathGroup(path)
-	emptyPathGroup := PathGroup{}
-		if  pathGroup !=&emptyPathGroup {
-
-			return r.getHandlerGroup(path, method)
 		
-		}
-	}
-	
+		// Checks if root path exsited in group then get Handler
+		if isGroupPath {
 
+		pathGroup  := r.PathGroup.GetPathGroup(path)
+		emptyPathGroup := PathGroup{}
+			if  pathGroup !=&emptyPathGroup {
+	
+				return r.getHandlerGroup(path, method)
+			
+			}
+		}
+}
+		
+ 
 	return r.getNormalHandler(path , method)
 
 }
@@ -240,6 +244,7 @@ func  GetRootGroupPath(m string) string{
 		fmt.Println(s)
 		return s
 	} else {
+ 
 		fmt.Println("Invalid string")
 	}
 	return ""
