@@ -1,14 +1,14 @@
 package envelope
 
 import (
-	 
+ 
 	"log"
 	"net"
- 
+
 	"sync"
 
 	"net/http"
- 
+
 	"reflect"
 )
 
@@ -16,7 +16,7 @@ type Envelope struct {
 	c             sync.Pool
 	HandlersChain []HandlersChain
 	Router        Router
- 
+	RouterGroup   RouterGroup
 	log           Log
 	Port          string
 
@@ -132,12 +132,35 @@ func validateHandler(handler Handler) {
 	}
 }
 
-func (l *Envelope) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+func (e *Envelope) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	var handler http.Handler
 	path := req.URL.Path
 	method := req.Method
+
+	isGroupPath := e.RouterGroup.checkPathIsGroup(GetRootGroupPath(path))
+
+	if isGroupPath{
+
+		result, isHttpHandler := e.RouterGroup.getHandlerGroup(method, path).(http.HandlerFunc)
+
  
-	result, isHttpHandler := l.Router.getHandler(method, path).(http.HandlerFunc)
+
+		if isHttpHandler {
+	 
+			handler = result
+		} else {
+			createdHandler := e.createHandlerFunc(e.Router.getHandler(method, path))
+	 
+			handler = createdHandler
+		}
+	
+
+		handler.ServeHTTP(w, req)
+
+		return
+	}
+ 
+	result, isHttpHandler := e.Router.getHandler(method, path).(http.HandlerFunc)
 
 
 
@@ -145,7 +168,7 @@ func (l *Envelope) ServeHTTP(w http.ResponseWriter, req *http.Request) {
  
 		handler = result
 	} else {
-		createdHandler := l.createHandlerFunc(l.Router.getHandler(method, path))
+		createdHandler := e.createHandlerFunc(e.Router.getHandler(method, path))
  
 		handler = createdHandler
 	}
@@ -153,6 +176,8 @@ func (l *Envelope) ServeHTTP(w http.ResponseWriter, req *http.Request) {
  
 
 	handler.ServeHTTP(w, req)
+
+	return
 
 }
  

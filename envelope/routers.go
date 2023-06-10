@@ -2,13 +2,12 @@ package envelope
 
 import (
 	"fmt"
+ 
 	"net/http"
 
 	"regexp"
 	"strings"
 	"unicode/utf8"
-
- 
 )
 
  
@@ -35,7 +34,7 @@ func NewRouter() *Router {
 type Route struct {
 	Method  string
 	Pattern string
-
+	RouterGroup RouterGroup
 	Handler Handler
  
 }
@@ -44,7 +43,15 @@ type Route struct {
 type Router struct {
 	routes []Route
 	PathGroup PathGroup
+	groupRouter []Route
 }
+
+type RouterGroup struct {
+	routes []Route
+	PathGroup PathGroup
+	groupRouter []Route
+}
+ 
 
 type PathGroup struct {
     leftPath  *PathGroup
@@ -64,22 +71,21 @@ type context struct{
  
  
 
-func (router *Router) Group(path string  ,fn func(r Router) Router ) {
- 
-		router.PathGroup.root = &PathGroup{leftPath: nil , rightPath: nil , Path : path}
+func (router *RouterGroup) Group(path string  ,fn func(r RouterGroup) RouterGroup ) {
 
+		router.PathGroup.root = &PathGroup{leftPath: nil , rightPath: nil , Path : path}
+	
 
 		for _, route := range fn(*router).routes{
 
-			 
 			if router.PathGroup.leftPath == nil{
-
-			
+ 
+ 
 				router.PathGroup.leftPath = &PathGroup{Path : route.Pattern,Handler: route.Handler , rightPath: nil , leftPath : nil  }
 
 			}else{
-
-			
+	
+	 
 				router.PathGroup.rightPath = &PathGroup{Path : route.Pattern, Handler: route.Handler ,rightPath: nil, leftPath : nil }
 
 			}
@@ -93,9 +99,9 @@ func (router *Router) Group(path string  ,fn func(r Router) Router ) {
   
 func (pathGroup *PathGroup) GetPathGroup(path string  ) *PathGroup {
 
-
-	fmt.Printf("path group :: %+v\n", pathGroup.rightPath.Path)
-
+	fmt.Printf("path grouppppppppppppppppppp2222222222 :: %+v\n", pathGroup.leftPath)
+ 
+	
 	if pathGroup.leftPath.Path == "" {
 
 		return nil
@@ -138,13 +144,23 @@ func (pathGroup *PathGroup) GetPathGroup(path string  ) *PathGroup {
 // }
 
 
-func (r *Router) AddRoute(method, path string, handler Handler) {
+func (r *Router) AddRouteNormal(method, path string, handler Handler) {
+	r.routes = append(r.routes, Route{Method: method, Pattern: path, Handler: handler})
+}
+
+func (r *RouterGroup) AddRouteGroup(method, path string, handler Handler) {
+
 	r.routes = append(r.routes, Route{Method: method, Pattern: path, Handler: handler})
 }
 
 
 
-func (r *Router) checkPathIsGroup (path string) bool{
+func (r *Router) AddRoute(method, path string, handler Handler) {
+	r.routes = append(r.routes, Route{Method: method, Pattern: path, Handler: handler})
+}
+
+
+func (r *RouterGroup) checkPathIsGroup (path string) bool{
 
 
 	if r.PathGroup.root.Path == "/" + path{
@@ -171,7 +187,9 @@ func (r *Router)getNormalHandler(path string, method string) Handler{
 
 
  
-func (r *Router)getHandlerGroup(path string, method string) Handler{
+func (r *RouterGroup)getHandlerGroup(path string, method string) Handler{
+
+ 
 	pathGroup := r.PathGroup.GetPathGroup(path)
  
 	if  pathGroup.Handler != nil {
@@ -186,6 +204,16 @@ func (r *Router)getHandlerGroup(path string, method string) Handler{
 
 func (r *Router) getHandler(method string, path string) Handler {
 	fmt.Printf("path :: %+v\n", path)
+
+ 
+ 
+	return r.getNormalHandler(path , method)
+
+}
+
+
+func (r *RouterGroup) getGroupHandler(method string, path string) Handler {
+	fmt.Printf("path :: %+v\n", path)
 	if path != pathRoot{
 		isGroupPath := r.checkPathIsGroup(GetRootGroupPath(path))
 
@@ -197,37 +225,54 @@ func (r *Router) getHandler(method string, path string) Handler {
 		pathGroup  := r.PathGroup.GetPathGroup(path)
 		emptyPathGroup := PathGroup{}
 			if  pathGroup !=&emptyPathGroup {
-	
+				
 				return r.getHandlerGroup(path, method)
 			
 			}
 		}
-}
+	}
 		
- 
-	return r.getNormalHandler(path , method)
+	return nil
 
 }
-
 
 
 
 func (r *Router) DELETE(path string, handler Handler) {
-	r.AddRoute(MethodDelete, path, handler)
+	r.AddRouteNormal(MethodDelete, path, handler)
 }
 
 func (r *Router) GET(path string, handler Handler) {
-	r.AddRoute(MethodGet, path, handler)
+	r.AddRouteNormal(MethodGet, path, handler)
 }
 
 func (r *Router) POST(path string, handler Handler) {
-	r.AddRoute(MethodPost, path, handler)
+	r.AddRouteNormal(MethodPost, path, handler)
 }
 
 func (r *Router) PUT(path string, handler Handler) {
-	r.AddRoute(MethodPut, path, handler)
+	r.AddRouteNormal(MethodPut, path, handler)
 }
 
+
+func (r *RouterGroup) DELETE(path string, handler Handler) {
+	r.AddRouteGroup(MethodDelete, path, handler)
+}
+
+func (r *RouterGroup) GET(path string, handler Handler) {
+	r.AddRouteGroup(MethodGet, path, handler)
+}
+
+func (r *RouterGroup) POST(path string, handler Handler) {
+
+ 
+	r.AddRouteGroup(MethodPost, path, handler)
+}
+
+func (r *RouterGroup) PUT(path string, handler Handler) {
+	r.AddRouteGroup(MethodPut, path, handler)
+}
+ 
  
 func trimFirstRune(s string) string {
     _, i := utf8.DecodeRuneInString(s)

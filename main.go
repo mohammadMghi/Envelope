@@ -26,23 +26,23 @@ func main() {
   }
   
  
-  envelop.Router.POST("/" , func() string{
+    envelop.Router.POST("/" , func() string{
 
-    return ""
-  })
-
-
-  envelop.Router.POST("/getTest" , func() string{
-    cache.Set("Test" , myTest ,100000000000000 )
-    return ""
-  })
-
-
+      return ""
+    })
+  
+  
+    envelop.Router.POST("/getTest" , func() string{
+      cache.Set("Test" , myTest ,100000000000000 )
+      return ""
+    })
 
 
 
 
-    envelop.Router.Group("/test" , func(r envelope.Router) envelope.Router {
+
+
+    envelop.RouterGroup.Group("/test" , func(r envelope.RouterGroup) envelope.RouterGroup {
     
 
       r.POST("/sdf" ,  http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -62,8 +62,13 @@ func main() {
         return "sdasdas"
 
       })
+
+ 
       return r
     })
+
+
+  
   
       // envelop.Router.POST("/",b)
 
