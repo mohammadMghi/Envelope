@@ -18,7 +18,7 @@ func main() {
  
 
 
-  cache :=  envelope.NewCacheEnv(100000000000000)
+  cache :=  envelope.NewCacheEnv(100000000000000000)
 
   myTest :=test{
     "Hello" , 
@@ -33,7 +33,8 @@ func main() {
   
   
     envelop.Router.POST("/getTest" , func() string{
-      cache.Set("Test" , myTest ,100000000000000 )
+      print("set is success")
+      cache.Set("Test" , myTest ,100000000000000000 )
       return ""
     })
 
@@ -47,9 +48,9 @@ func main() {
 
       r.POST("/sdf" ,  http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         inter , b  :=cache.Get("Test")
-            fmt.Printf("this is iiiiiiiiiiiiiiiiii %+v\n",inter )
+            fmt.Printf("this is true %+v\n",inter )
         if b {
-          fmt.Printf("this is iiiiiiiiiiiiiiiiii %+v\n",inter )
+          fmt.Printf("this is false %+v\n",inter )
         }
         
   

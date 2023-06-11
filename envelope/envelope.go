@@ -141,7 +141,7 @@ func (e *Envelope) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	if isGroupPath{
 
-		result, isHttpHandler := e.RouterGroup.getHandlerGroup(method, path).(http.HandlerFunc)
+		result, isHttpHandler := e.RouterGroup.getHandlerGroup( path , method).(http.HandlerFunc)
 
  
 

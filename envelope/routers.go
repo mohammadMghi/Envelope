@@ -98,31 +98,27 @@ func (router *RouterGroup) Group(path string  ,fn func(r RouterGroup) RouterGrou
 
   
 func (pathGroup *PathGroup) GetPathGroup(path string  ) *PathGroup {
-
-	fmt.Printf("path grouppppppppppppppppppp2222222222 :: %+v\n", pathGroup.leftPath)
  
+	if pathGroup == nil{
+ 
+		return nil
+	}
 	
-	if pathGroup.leftPath.Path == "" {
+	if pathGroup.leftPath != nil {
+		if  pathGroup.leftPath.Path ==  GetGroupPath(path){
 
-		return nil
+			return pathGroup.leftPath
+		}
 	}
+	 
+	if pathGroup.rightPath != nil {
 
- 
-	if pathGroup.rightPath.Path == "" {
- 
-		return nil
+		if pathGroup.rightPath.Path == GetGroupPath(path){
+	
+			return pathGroup.rightPath
+		}
 	}
-
-	if  pathGroup.leftPath.Path ==  GetGroupPath(path){
  
-		return pathGroup.leftPath
-	}
-
-	if pathGroup.rightPath.Path == GetGroupPath(path){
- 
-		return pathGroup.rightPath
-	}
-
 
 
  
