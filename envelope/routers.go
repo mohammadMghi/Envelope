@@ -169,11 +169,13 @@ func (r *RouterGroup) checkPathIsGroup (path string) bool{
 
 func (r *Router)getNormalHandler(path string, method string) Handler{
 
+
  
 	for _, route := range r.routes {
 				re := regexp.MustCompile(route.Pattern)
+ 
 				if route.Method == method && re.MatchString(path) {
-	
+  
 					return route.Handler
 				}
 			}
@@ -197,15 +199,7 @@ func (r *RouterGroup)getHandlerGroup(path string, method string) Handler{
 }
 
  
-
-func (r *Router) getHandler(method string, path string) Handler {
-	fmt.Printf("path :: %+v\n", path)
-
  
- 
-	return r.getNormalHandler(path , method)
-
-}
 
 
 func (r *RouterGroup) getGroupHandler(method string, path string) Handler {

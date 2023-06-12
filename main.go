@@ -32,12 +32,7 @@ func main() {
     })
   
   
-    envelop.Router.POST("/getTest" , func() string{
-      print("set is success")
-      cache.Set("Test" , myTest ,100000000000000000 )
-      return ""
-    })
-
+ 
 
 
 
@@ -69,7 +64,12 @@ func main() {
     })
 
 
-  
+    envelop.Router.POST("/getTest" , func(){
+      print("set is success")
+      cache.Set("Test" , myTest ,100000000000000000 )
+ 
+    })
+
   
       // envelop.Router.POST("/",b)
 

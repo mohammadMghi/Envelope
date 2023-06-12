@@ -95,17 +95,20 @@ func (e *Envelope) Handler() http.Handler {
 func (e *Envelope) createHandlerFunc(handler Handler) http.Handler {
 	
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		handlerStringFunction , casted:= handler.(func() string)
+		handlerStringFunction , casted:= handler.(func() (string))
 		handlerFunction , castedhandlerFunction:= handler.(func())
 		handlerIntStringFunction , castedhandlerStringIntFunction:= handler.(func() (int, string) )
 		if casted{
+ 
 			 txt := handlerStringFunction()
 			 b := []byte(txt)
+	
 			 w.Write(b)
-			 print(txt)
+	 
 			 return
 		}
 		if castedhandlerFunction{
+		 
 			handlerFunction()
 			return
 		}
@@ -146,10 +149,10 @@ func (e *Envelope) ServeHTTP(w http.ResponseWriter, req *http.Request) {
  
 
 		if isHttpHandler {
-	 
+			
 			handler = result
 		} else {
-			createdHandler := e.createHandlerFunc(e.Router.getHandler(method, path))
+			createdHandler := e.createHandlerFunc(e.RouterGroup.getHandlerGroup( path , method))
 	 
 			handler = createdHandler
 		}
@@ -160,15 +163,16 @@ func (e *Envelope) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
  
-	result, isHttpHandler := e.Router.getHandler(method, path).(http.HandlerFunc)
+	result, isHttpHandler := e.Router.getNormalHandler( path , method).(http.HandlerFunc)
 
-
+ 
 
 	if isHttpHandler {
- 
+	 
 		handler = result
 	} else {
-		createdHandler := e.createHandlerFunc(e.Router.getHandler(method, path))
+	
+		createdHandler := e.createHandlerFunc(e.Router.getNormalHandler( path  ,method))
  
 		handler = createdHandler
 	}
